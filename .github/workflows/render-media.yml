@@ -76,7 +76,7 @@ jobs:
             batch_code=$(jq -r '.batch_code' "$manifest")
             jq -n --arg batch_code "$batch_code" \
               --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-              --argjson assets "$(jq '[.svg_files[] | sub("^queue/"; "rendered/") | sub("\\.svg$"; ".png")]' "$manifest")" \
+              --argjson assets "$(jq '[ (.svg_files[] | sub("^queue/"; "rendered/") | sub("\\.svg$"; ".png")), (.reel_prefixes[]? | "rendered/" + . + ".mp4") ]' "$manifest")" \
               '{batch_code: $batch_code, status: "READY", generated_at: $generated_at, assets: $assets}' \
               > "rendered/status/${batch_code}.json"
           done < /tmp/batch_manifests.txt
